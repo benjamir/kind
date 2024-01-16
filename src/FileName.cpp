@@ -100,6 +100,22 @@ std::string FileName::getFileName() const
   return res;
 }
 
+std::string FileName::getShellFileName() const
+{
+  std::string fn = getFileName();
+  //std::cout << "DEBUG:  " << fn << std::endl;
+  std::string escaped_fn;
+  for (const char a : fn)
+    {
+      if (a == ' ')
+        escaped_fn += "\\ ";
+      else
+        escaped_fn += a;
+    }
+  // std::cout << "DEBUG:  " << escaped_fn << std::endl;
+  return escaped_fn;
+}
+
 std::string FileName::getPath() const
 {
   string res;
@@ -128,6 +144,7 @@ int main(int argc, char** argv)
           cout << fn.getName() << endl;
           cout << fn.getExtension() << endl;
           cout << fn.getFileName() << endl;
+          cout << fn.getShellFileName() << endl;
         }
       else if (argc == 4)
         {
@@ -136,6 +153,7 @@ int main(int argc, char** argv)
           cout << fn.getName() << endl;
           cout << fn.getExtension() << endl;
           cout << fn.getFileName() << endl;
+          cout << fn.getShellFileName() << endl;
         }
     }
   catch (const char* msg)

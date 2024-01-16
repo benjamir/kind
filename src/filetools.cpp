@@ -224,6 +224,7 @@ Strings localExec(const std::string& cmd,
       log << "Executing " << cmd << std::endl;
       log << "--------------------------------------------------------" << std::endl;
     }
+
   Strings res;
   FILE* fd = popen(cmd.c_str(), "r");
   if (fd != nullptr)
@@ -263,7 +264,7 @@ Strings localExec(const std::string& cmd,
   if (log.is_open())
     {
       log << "--------------------------------------------------------" << std::endl;
-      log << "rsync exit value: " << rc << std::endl;
+      log << cmd << " - exit value: " << rc << std::endl;
     }
   return res;
 }
@@ -273,6 +274,5 @@ Strings remoteExec(const std::string& rshCommand,
                    int& rc, bool debug,
                    const std::string& logfn)
 {
-
-  return localExec(rshCommand + " " + cmd, rc, debug, logfn);
+  return localExec(rshCommand + " $'" + cmd + "'", rc, debug, logfn);
 }

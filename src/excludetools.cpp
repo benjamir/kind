@@ -1,3 +1,4 @@
+#include <iostream>
 #include "kind.h"
 #include "Exception.h"
 #include "FileName.h"
@@ -14,7 +15,7 @@ Strings getExclusions(const KindConfig& conf)
 
   if (conf.getBool("shellMode"))
     {
-      string path = conf.getString("path");
+      FileName path = conf.getString("path");
       string remoteShell = conf.getString("remoteShell");
       string userAtHost = conf.getString("user") + "@" + conf.getString("host");
       string rshCommand = remoteShell;
@@ -27,7 +28,8 @@ Strings getExclusions(const KindConfig& conf)
 
       for (auto cmd : userExcludeCommands)
         {
-          replacePlaceHolder(cmd, "%path", conf.getString("path"));
+          FileName pathName = conf.getString("path");
+          replacePlaceHolder(cmd, "%path", pathName.getShellFileName());
 
           verbosePrint("looking for exclusions (" + cmd + ")");
 
@@ -51,10 +53,10 @@ Strings getExclusions(const KindConfig& conf)
       string userExcludeFile = conf.getString("userExcludeFile");
       if (!userExcludeFile.empty())
         {
-          userExcludeFile = path + "/" + userExcludeFile;
-          string getExcludeFileCommand = " \" if [ -f '" + userExcludeFile + "' ]; then ";
-          getExcludeFileCommand += " cat '" + userExcludeFile + "' ; fi \"";
-          // cout << getExcludeFileCommand << endl;
+          userExcludeFile = path.getShellFileName() + "/" + userExcludeFile;
+          string getExcludeFileCommand = " if [ -f " + userExcludeFile + " ]; then ";
+          getExcludeFileCommand += " cat " + userExcludeFile + " ; fi";
+          std::cout << getExcludeFileCommand << std::endl;
           int rc;
           Strings excludes2 = remoteExec(rshCommand, getExcludeFileCommand, rc, debug);
           if (rc == 0)

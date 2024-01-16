@@ -19,6 +19,7 @@ public:
            const std::string& ext);
 
   std::string getFileName() const;
+  std::string getShellFileName() const;
 
   std::string getName() const
   {

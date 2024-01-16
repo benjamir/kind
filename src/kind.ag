@@ -216,6 +216,8 @@ string getImageName(const KindConfig& conf,
   if (!imageName.empty())
     imageName += '-';
 
+  string vaultPath = conf.getString("vaultPath");
+
   string imageFullName =  conf.getString("vaultPath") + "/" + imageName ;
 
   if (conf.getBool("longImageName"))
@@ -304,11 +306,11 @@ void doBackup(const string& vault,
         throw Exception("host not reachable", pingCommand);
     }
 
-  string path = conf.getString("path");
-  if (path.empty())
+
+  string pathstring = conf.getString("path");
+  if (pathstring.empty())
     throw Exception("rsync", "empty source path");
-  if (path.back() != '/')
-    path += '/';
+  FileName pathName(pathstring);
 
   string rsyncCmd = "rsync -vrltH --delete --stats -D --numeric-ids ";
   if (!conf.getBool("ignorePermission"))
@@ -358,8 +360,9 @@ void doBackup(const string& vault,
       rsyncCmd += "--exclude-from=" + imageFullName + "/exclude ";
       if (!referenceImage.empty())
         rsyncCmd += "--link-dest=" + referenceImage + "/tree ";
-      rsyncCmd += userAtHost + ":" + path + " ";
+      rsyncCmd += '"' + userAtHost + ":" + pathName.getShellFileName() + "\" ";
       rsyncCmd += imageFullName + "/tree";
+      std::cout << rsyncCmd << std::endl;
     } // shell mode
   else // server mode
     {
@@ -372,7 +375,7 @@ void doBackup(const string& vault,
       rsyncCmd += "--exclude-from=" + imageFullName + "/exclude ";
       if (!referenceImage.empty())
         rsyncCmd += "--link-dest=" + referenceImage + "/tree ";
-      rsyncCmd += conf.getString("server") + "::" + path + " ";
+      rsyncCmd += conf.getString("server") + "::" + pathName.getShellFileName() + " ";
       rsyncCmd += imageFullName + "/tree";
     }
 
@@ -582,7 +585,7 @@ bool backupVault(const string& vault,
         }
       return backupNow;
     }
-  catch (Exception ex)
+  catch (const Exception& ex)
     {
       cerr << EXCEPTION + " in vault " << vault << ": " << ex.what() << endl;
       return false;
@@ -645,7 +648,7 @@ void expireVault(const string& vault, KindConfig conf, DateTime now)
                   if (removeDir(image.name) != 0)
                     cout << "Error removing " <<  image.name << endl;
                 }
-              catch (Exception ex)
+              catch (const Exception& ex)
                 {
                   cerr << EXCEPTION + ": " << ex.what() << endl;
                 }
