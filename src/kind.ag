@@ -362,7 +362,7 @@ void doBackup(const string& vault,
         rsyncCmd += "--link-dest=" + referenceImage + "/tree ";
       rsyncCmd += '"' + userAtHost + ":" + pathName.getShellFileName() + "\" ";
       rsyncCmd += imageFullName + "/tree";
-      std::cout << rsyncCmd << std::endl;
+      // std::cout << rsyncCmd << std::endl;
     } // shell mode
   else // server mode
     {

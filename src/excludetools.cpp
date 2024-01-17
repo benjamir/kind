@@ -56,7 +56,7 @@ Strings getExclusions(const KindConfig& conf)
           userExcludeFile = path.getShellFileName() + "/" + userExcludeFile;
           string getExcludeFileCommand = " if [ -f " + userExcludeFile + " ]; then ";
           getExcludeFileCommand += " cat " + userExcludeFile + " ; fi";
-          std::cout << getExcludeFileCommand << std::endl;
+          // std::cout << getExcludeFileCommand << std::endl;
           int rc;
           Strings excludes2 = remoteExec(rshCommand, getExcludeFileCommand, rc, debug);
           if (rc == 0)
